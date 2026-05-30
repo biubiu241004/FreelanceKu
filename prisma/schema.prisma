@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  name               String
+  email              String              @unique
+  password           String
+  role               Role                @default(CLIENT)
+  avatar             String?
+  bio                String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  receivedMessages   Message[]           @relation("ReceivedMessages")
+  sentMessages       Message[]           @relation("SentMessages")
+  ordersAsClient     Order[]             @relation("ClientOrders")
+  ordersAsFreelancer Order[]             @relation("FreelancerOrders")
+  reviewsReceived    Review[]            @relation("ReviewsReceived")
+  reviewsGiven       Review[]            @relation("ReviewsGiven")
+  services           Service[]
+  walletTransactions WalletTransaction[]
+}
+
+model Service {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  price        Float
+  category     String
+  image        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  freelancerId String
+  orders       Order[]
+  reviews      Review[]
+  freelancer   User     @relation(fields: [freelancerId], references: [id])
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  status       OrderStatus @default(PENDING)
+  totalPrice   Float
+  note         String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  serviceId    String
+  clientId     String
+  freelancerId String
+  messages     Message[]
+  client       User        @relation("ClientOrders", fields: [clientId], references: [id])
+  freelancer   User        @relation("FreelancerOrders", fields: [freelancerId], references: [id])
+  service      Service     @relation(fields: [serviceId], references: [id])
+  payment      Payment?
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  amount    Float
+  status    PaymentStatus @default(UNPAID)
+  snapToken String?
+  snapUrl   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  orderId   String        @unique
+  order     Order         @relation(fields: [orderId], references: [id])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  serviceId  String
+  reviewerId String
+  reviewedId String
+  reviewed   User     @relation("ReviewsReceived", fields: [reviewedId], references: [id])
+  reviewer   User     @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+  service    Service  @relation(fields: [serviceId], references: [id])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  fileUrl    String?
+  createdAt  DateTime @default(now())
+  orderId    String
+  senderId   String
+  receiverId String
+  order      Order    @relation(fields: [orderId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+}
+
+model WalletTransaction {
+  id        String            @id @default(cuid())
+  userId    String
+  amount    Float
+  type      TransactionType
+  status    TransactionStatus @default(SUCCESS)
+  note      String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  user      User              @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  CLIENT
+  FREELANCER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REVISION
+}
+
+enum PaymentStatus {
+  UNPAID
+  PENDING
+  PAID
+  RELEASED
+  REFUNDED
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  INCOME
+  PAYMENT
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}

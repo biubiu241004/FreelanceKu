@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: hsl(252, 100%, 96%);
+  --color-primary-100: hsl(252, 100%, 92%);
+  --color-primary-500: hsl(262, 80%, 55%);
+  --color-primary-600: hsl(262, 80%, 48%);
+  --color-accent-pink: hsl(325, 90%, 58%);
+  --color-accent-blue: hsl(190, 95%, 48%);
+  --color-dark-bg: hsl(240, 20%, 4%);
+  --color-dark-surface: rgba(15, 15, 23, 0.7);
+  --color-dark-border: rgba(255, 255, 255, 0.08);
+  
+  --font-sans: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+  
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 3s infinite alternate;
+  --animate-ambient: ambient-rotate 25s infinite linear;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(0.5deg); }
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 15px rgba(124, 58, 237, 0.2); }
+  100% { box-shadow: 0 0 30px rgba(236, 72, 153, 0.5); }
+}
+
+@keyframes ambient-rotate {
+  0% { transform: translate(0px, 0px) rotate(0deg); }
+  50% { transform: translate(60px, -80px) rotate(180deg) scale(1.2); }
+  100% { transform: translate(0px, 0px) rotate(360deg); }
+}
+
+:root {
+  --background: #060608;
+  --foreground: #f4f4f5;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  background: rgba(13, 13, 18, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-panel-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(20, 20, 30, 0.85);
+  border-color: rgba(124, 58, 237, 0.25);
+  transform: translateY(-5px);
+  box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.25);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #060608;
+}
+::-webkit-scrollbar-thumb {
+  background: #18181b;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #27272a;
+}
